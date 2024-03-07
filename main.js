@@ -1,66 +1,42 @@
-const puppeteer = require("puppeteer");
-const { faker } = require("@faker-js/faker");
+import puppeteer from "puppeteer";
+import { faker } from "@faker-js/faker";
 
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 
-async function submitFormData() {
+async function submitForm() {
   const url = process.env.TARGET_URL;
 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  let counter = 0;
-
   try {
-    while (true) {
-      counter++;
-      console.log("Request number #" + counter);
+    await page.goto(url);
 
-      await page.goto(url);
+    // Click the button to open the form
+    // await page.click(".elementor-button-wrapper a.elementor-button");
 
-      // Generate random data
-      const formData = {
-        name: faker.person.fullName(),
-        email: faker.internet.email(),
-        password: faker.internet.password(),
-        whatsapp: `081${faker.number.int({
-          min: 1000000000,
-          max: 9999999999,
-        })}`,
-        dateOfBirth: formatDate(
-          faker.date.between({ from: "1950-01-01", to: "2000-12-31" })
-        ),
-      };
+    // Generate random data
+    const formData = {
+      name: faker.person.fullName(),
+      comment:
+        "Congratulations for your wedding! I hope you have a great life together!",
+      konfirmasi: "Masih Ragu",
+    };
 
-      console.log("Submitting form with data:", formData);
+    console.log("Submitting form with data:", formData);
 
-      // Fill out the form
-      await page.type(
-        'input[name="wnd_ShortTextField_572872053"]',
-        formData.name
-      );
-      await page.type(
-        'input[name="wnd_ShortTextField_865737820"]',
-        formData.email
-      );
-      await page.type(
-        'input[name="wnd_ShortTextField_614639426"]',
-        formData.password
-      );
-      await page.type(
-        'input[name="wnd_PhoneField_262975746"]',
-        formData.whatsapp
-      );
-      await page.type(
-        'input[name="wnd_DateField_619475723"]',
-        formData.dateOfBirth
-      );
+    // Fill out the form
+    await page.type('input[name="author"]', formData.name);
+    // Input text into the textarea
+    await page.type("#cui-textarea-22162", formData.comment);
+    // Select the option "Masih Ragu"
+    await page.select("#konfirmasi", "Masih Ragu");
 
-      // Submit the form
-      await page.click('button[type="submit"]');
+    // Submit the form by clicking the submit button
+    await page.click('input[name="submit"]');
 
-      console.log("Form submitted successfully \n");
-    }
+    console.log("Form submitted successfully \n");
   } catch (error) {
     console.error("Error submitting form:", error);
   } finally {
@@ -68,11 +44,15 @@ async function submitFormData() {
   }
 }
 
-function formatDate(date) {
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-  const year = date.getFullYear();
-  return `${month}/${day}/${year}`;
-}
+// Execute the function multiple times
+const numberOfExecutions = process.env.NUMBER_OF_REQUESTS; // Change this to the desired number of executions
 
-submitFormData();
+for (let i = 0; i < numberOfExecutions; i++) {
+  console.log(`Execution number ${i + 1}:`);
+  await submitForm();
+
+  // Random delay between 1 and 5 seconds
+  const delay = Math.floor(Math.random() * 5) + 1;
+  console.log(`Waiting for ${delay} seconds...`);
+  await new Promise((resolve) => setTimeout(resolve, delay * 1000));
+}

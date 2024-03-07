@@ -14,5 +14,6 @@
     "@faker-js/faker": "^8.4.1",
     "dotenv": "^16.4.1",
     "puppeteer": "^22.0.0"
-  }
+  },
+  "type": "module"
 }
