@@ -19,8 +19,7 @@ async function submitForm() {
     // Generate random data
     const formData = {
       name: faker.person.fullName(),
-      comment:
-        "Congratulations for your wedding! I hope you have a great life together!",
+      comment: faker.lorem.sentence(), // Generate random lorem sentence
       konfirmasi: "Masih Ragu",
     };
 
@@ -45,7 +44,7 @@ async function submitForm() {
 }
 
 // Execute the function multiple times
-const numberOfExecutions = process.env.NUMBER_OF_REQUESTS; // Change this to the desired number of executions
+const numberOfExecutions = parseInt(process.env.NUMBER_OF_REQUESTS); // Change this to the desired number of executions
 
 for (let i = 0; i < numberOfExecutions; i++) {
   console.log(`Execution number ${i + 1}:`);
